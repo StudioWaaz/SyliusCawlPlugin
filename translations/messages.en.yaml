@@ -1,0 +1,13 @@
+waaz_sylius_cawl_plugin:
+    ui:
+        cawl_configuration: 'CAWL Payment Gateway Configuration'
+    form:
+        gateway_configuration:
+            api_key: 'API Key'
+            api_secret: 'API Secret'
+            endpoint: 'Endpoint URL'
+            sandbox: 'Sandbox Mode'
+            api_key.not_blank: 'Please enter the API key.'
+            api_secret.not_blank: 'Please enter the API secret.'
+            endpoint.not_blank: 'Please enter the endpoint URL.'
+            endpoint.invalid_url: 'Please enter a valid URL.'

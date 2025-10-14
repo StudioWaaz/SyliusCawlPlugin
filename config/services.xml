@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+    <services>
+        <!-- CAWL Gateway Factory -->
+        <service id="waaz_sylius_cawl_plugin.payum.cawl_gateway_factory" class="Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder" public="true">
+            <argument>Waaz\SyliusCawlPlugin\Payum\CawlGateway\CawlGatewayFactory</argument>
+            <tag name="payum.gateway_factory_builder" factory="cawl" />
+        </service>
+        <!-- CAWL Gateway Configuration Form Type -->
+        <service id="waaz_sylius_cawl_plugin.form.type.cawl_gateway_configuration" class="Waaz\SyliusCawlPlugin\Form\Type\CawlGatewayConfigurationType">
+            <tag name="sylius.gateway_configuration_type" type="cawl" label="CAWL (Crédit Agricole)" />
+            <tag name="form.type" />
+        </service>
+
+        <!-- CAWL Payum Actions -->
+        <service id="waaz_sylius_cawl_plugin.payum.action.capture" class="Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\CaptureAction" public="true">
+            <tag name="payum.action" factory="cawl" alias="payum.action.capture" />
+        </service>
+
+        <service id="waaz_sylius_cawl_plugin.payum.action.status" class="Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\StatusAction" public="true">
+            <tag name="payum.action" factory="cawl" alias="payum.action.status" />
+        </service>
+
+        <service id="waaz_sylius_cawl_plugin.payum.action.refund" class="Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\RefundAction" public="true">
+            <tag name="payum.action" factory="cawl" alias="payum.action.refund" />
+        </service>
+    </services>
+</container>

@@ -1,0 +1,7 @@
+waaz_sylius_cawl_plugin:
+    form:
+        gateway_configuration:
+            api_key.not_blank: 'Veuillez saisir la clé API.'
+            api_secret.not_blank: 'Veuillez saisir la clé secrète API.'
+            endpoint.not_blank: 'Veuillez saisir l''URL du point de terminaison.'
+            endpoint.invalid_url: 'Veuillez saisir une URL valide.'

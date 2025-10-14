@@ -1,0 +1,14 @@
+waaz_sylius_cawl_plugin:
+    ui:
+        cawl_configuration: 'Configuration de la passerelle de paiement CAWL'
+    form:
+        gateway_configuration:
+            api_key: 'Clé API'
+            api_secret: 'Clé secrète API'
+            endpoint: 'URL du point de terminaison'
+            sandbox: 'Mode bac à sable'
+            api_key.not_blank: 'Veuillez saisir la clé API.'
+            api_secret.not_blank: 'Veuillez saisir la clé secrète API.'
+            endpoint.not_blank: 'Veuillez saisir l''URL du point de terminaison.'
+            endpoint.invalid_url: 'Veuillez saisir une URL valide.'
+            merchant_id: 'Merchant ID'

@@ -1,0 +1,24 @@
+{% form_theme form '@SyliusAdmin/Form/theme.html.twig' %}
+
+<div class="ui segment">
+    <h4 class="ui dividing header">{{ 'waaz_sylius_cawl_plugin.ui.cawl_configuration'|trans }}</h4>
+
+    <div class="two fields">
+        <div class="field">
+            {{ form_row(form.api_key, {'label': 'waaz_sylius_cawl_plugin.form.gateway_configuration.api_key'|trans}) }}
+        </div>
+        <div class="field">
+            {{ form_row(form.api_secret, {'label': 'waaz_sylius_cawl_plugin.form.gateway_configuration.api_secret'|trans}) }}
+        </div>
+    </div>
+
+    <div class="field">
+        {{ form_row(form.endpoint, {'label': 'waaz_sylius_cawl_plugin.form.gateway_configuration.endpoint'|trans}) }}
+    </div>
+
+    <div class="field">
+        {{ form_row(form.sandbox, {'label': 'waaz_sylius_cawl_plugin.form.gateway_configuration.sandbox'|trans}) }}
+    </div>
+</div>
+
+{{ form_rest(form) }}
