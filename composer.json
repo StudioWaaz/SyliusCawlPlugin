@@ -1,5 +1,6 @@
 {
     "type": "sylius-plugin",
+    "name": "waaz/sylius-cawl-plugin",
     "keywords": [
         "sylius",
         "sylius-plugin",
