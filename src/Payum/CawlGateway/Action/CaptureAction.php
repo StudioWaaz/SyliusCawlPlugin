@@ -19,7 +19,6 @@ use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\GenericTokenFactoryAwareInterface;
 use Payum\Core\Security\GenericTokenFactoryAwareTrait;
-use Payum\Core\Security\TokenFactoryInterface;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Api;
@@ -46,7 +45,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         $notifyToken = $this->createNotifyToken($request);
 
         // If payment is already processed, skip
-        if (isset($details['cawl_payment_id']) && isset($details['cawl_redirect_url'])) {
+        if (isset($details['cawl_payment_id'], $details['cawl_redirect_url'])) {
             throw new HttpRedirect($details['cawl_redirect_url']);
         }
 
@@ -70,7 +69,6 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         $createHostedCheckoutRequest->setOrder($order);
         $createHostedCheckoutRequest->setHostedCheckoutSpecificInput($hostedCheckoutSpecificInput);
 
-
         $response = $this->api->createHostedPayment($createHostedCheckoutRequest);
 
         $details['cawl_hosted_checkout_id'] = $response->hostedCheckoutId;
@@ -92,7 +90,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
 
         return $this->tokenFactory->createNotifyToken(
             $token->getGatewayName(),
-            $token->getDetails()
+            $token->getDetails(),
         );
     }
 

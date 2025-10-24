@@ -21,16 +21,20 @@ use OnlinePayments\Sdk\Webhooks\SignatureValidator;
 final class Api
 {
     private Client $client;
+
     private string $merchantId;
+
     private string $webhookId;
+
     private string $webhookSecret;
+
     public function __construct(
         string $apiKey,
         string $apiSecret,
         string $merchantId,
         string $webhookId = '',
         string $webhookSecret = '',
-        bool $sandbox = true
+        bool $sandbox = true,
     ) {
         $endpoint = $sandbox
             ? 'https://payment.preprod.cawl-solutions.fr'
@@ -40,7 +44,7 @@ final class Api
             $apiKey,
             $apiSecret,
             $endpoint,
-            'OnlinePayments'
+            'OnlinePayments',
         );
 
         $authenticator = new V1HmacAuthenticator($communicatorConfiguration);

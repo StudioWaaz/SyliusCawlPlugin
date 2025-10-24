@@ -43,6 +43,7 @@ class WebhookProcessorAction implements ActionInterface, GatewayAwareInterface
     private function handleWebhookNotification(array $payload): array
     {
         $details = [];
+
         // Valider la signature du webhook
         try {
             // Traiter les données du webhook selon la documentation Cawl
@@ -60,7 +61,6 @@ class WebhookProcessorAction implements ActionInterface, GatewayAwareInterface
                     $details['cawl_status_category'] = $paymentData['statusOutput']['statusCategory'] ?? null;
                 }
             }
-
         } catch (\Exception $e) {
             $details['cawl_webhook_error'] = $e->getMessage();
         }

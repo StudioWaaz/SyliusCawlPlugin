@@ -30,10 +30,6 @@
             <tag name="payum.action" factory="cawl" alias="payum.action.webhook_processor" />
         </service>
 
-        <service id="waaz_sylius_cawl_plugin.payum.action.refund" class="Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\RefundAction" public="true">
-            <tag name="payum.action" factory="cawl" alias="payum.action.refund" />
-        </service>
-
         <service id="waaz_sylius_cawl_plugin.payum.extension.update_payment_state" class="Waaz\SyliusCawlPlugin\Payum\CawlGateway\Extension\UpdatePaymentStateExtension" public="true">
             <argument type="service" id="sm.factory" />
             <argument type="service" id="payum.storage.waaz_sylius_payment"/>

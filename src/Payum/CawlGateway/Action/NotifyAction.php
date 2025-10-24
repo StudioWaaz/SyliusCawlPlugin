@@ -22,7 +22,8 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayA
     use ApiAwareTrait;
     use GatewayAwareTrait;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->apiClass = Api::class;
     }
 
@@ -59,7 +60,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayA
         $this->api->verifySignature($content, $headers);
 
         try {
-            $payload = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+            $payload = json_decode($content, true, 512, \JSON_THROW_ON_ERROR);
         } catch (\JsonException) {
             throw RequestNotSupportedException::create($request);
         }
@@ -70,15 +71,15 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayA
 
         return new WebhookProcessor(
             $token,
-            $payload
+            $payload,
         );
     }
-
 
     private function findTokenByHash(string $tokenHash): TokenInterface
     {
         $getTokenRequest = new GetToken($tokenHash);
         $this->gateway->execute($getTokenRequest);
+
         return $getTokenRequest->getToken();
     }
 
@@ -91,6 +92,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayA
     {
         return isset($headers['x-gcs-signature'][0]);
     }
+
     public function supports($request): bool
     {
         return $request instanceof Notify;

@@ -31,15 +31,12 @@ final class UpdatePaymentStateExtension implements ExtensionInterface
 
     private GetStatusFactoryInterface $getStatusRequestFactory;
 
-    /**
-     * @var FactoryInterface
-     */
     private FactoryInterface $stateMachineFactory;
 
     public function __construct(
         FactoryInterface $stateMachineFactory,
         StorageInterface $storage,
-        GetStatusFactoryInterface $getStatusRequestFactory
+        GetStatusFactoryInterface $getStatusRequestFactory,
     ) {
         $this->getStatusRequestFactory = $getStatusRequestFactory;
         $this->storage = $storage;
@@ -122,8 +119,8 @@ final class UpdatePaymentStateExtension implements ExtensionInterface
     private function updatePaymentState(PaymentInterface $payment, string $nextState): void
     {
         $sm = $this->stateMachineFactory->get($payment, PaymentTransitions::GRAPH);
-        $transition =$sm->getTransitionToState(
-            $nextState
+        $transition = $sm->getTransitionToState(
+            $nextState,
         );
 
         if (null === $transition) {
@@ -131,7 +128,7 @@ final class UpdatePaymentStateExtension implements ExtensionInterface
         }
 
         $sm->apply(
-            $transition
+            $transition,
         );
     }
 

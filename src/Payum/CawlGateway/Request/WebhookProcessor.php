@@ -23,7 +23,7 @@ final class WebhookProcessor extends Generic
 
     public function __construct(
         $model,
-        array $payload
+        array $payload,
     ) {
         $this->payload = $payload;
         parent::__construct($model);

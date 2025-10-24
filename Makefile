@@ -24,6 +24,12 @@ frontend:
 behat:
 	vendor/bin/behat --colors --strict --no-interaction -vvv -f progress
 
+ecs:
+	vendor/bin/ecs check src/
+
+ecs-fix:
+	vendor/bin/ecs check --fix src/
+
 init: install backend frontend
 
 ci: init phpstan phpunit phpspec behat

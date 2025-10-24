@@ -2,9 +2,17 @@
     "type": "sylius-plugin",
     "keywords": [
         "sylius",
-        "sylius-plugin"
+        "sylius-plugin",
+        "CAWL",
+        "Crédit Agricole"
     ],
-    "license": "proprietary",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ibes Mongabure",
+            "email": "ehibes@users.noreply.github.com"
+        }
+    ],
     "require": {
         "php": "^8.1",
         "online-payments/sdk-php": "^7.3",

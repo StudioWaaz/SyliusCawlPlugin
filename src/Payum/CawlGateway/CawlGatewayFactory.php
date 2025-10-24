@@ -6,10 +6,6 @@ namespace Waaz\SyliusCawlPlugin\Payum\CawlGateway;
 
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
-use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\CaptureAction;
-use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\NotifyAction;
-use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\StatusAction;
-use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action\RefundAction;
 
 final class CawlGatewayFactory extends GatewayFactory
 {
@@ -42,9 +38,9 @@ final class CawlGatewayFactory extends GatewayFactory
                     $config['api_key'],
                     $config['api_secret'],
                     $config['merchant_id'],
-                        $config['webhook_id'] ?? '',
+                    $config['webhook_id'] ?? '',
                     $config['webhook_secret'] ?? '',
-                    $config['sandbox']
+                    $config['sandbox'],
                 );
             };
         }

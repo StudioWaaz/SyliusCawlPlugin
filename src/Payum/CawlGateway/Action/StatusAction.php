@@ -31,11 +31,13 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
 
         if (isset($details['cawl_error'])) {
             $request->markFailed();
+
             return;
         }
 
         if (!isset($details['cawl_payment_id'])) {
             $request->markNew();
+
             return;
         }
 
@@ -49,24 +51,30 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
                 case 'AUTHORIZATION_REQUESTED':
                 case 'REDIRECTED':
                     $request->markPending();
+
                     break;
                 case 'PENDING_CAPTURE':
                 case 'CAPTURED':
                 case 'PAID':
                     $request->markCaptured();
+
                     break;
                 case 'CANCELLED':
                     $request->markCanceled();
+
                     break;
                 case 'REJECTED':
                 case 'REJECTED_CAPTURE':
                     $request->markFailed();
+
                     break;
                 case 'REFUNDED':
                     $request->markRefunded();
+
                     break;
                 default:
                     $request->markUnknown();
+
                     break;
             }
         } catch (\Exception $e) {
