@@ -40,21 +40,14 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
         }
 
         try {
-            $response = $this->api->getPayment($details['cawl_payment_id']);
-            $status = $response->getStatus();
-
-            // Update the status in payment details
-            $details['cawl_status'] = $status;
-            $payment->setDetails($details);
+            $status = $details['cawl_status'];
 
             switch ($status) {
                 case 'CREATED':
                 case 'PENDING_PAYMENT':
-                case 'REDIRECTED':
-                    $request->markPending();
-                    break;
-                case 'AUTHORIZATION_REQUESTED':
                 case 'PENDING_APPROVAL':
+                case 'AUTHORIZATION_REQUESTED':
+                case 'REDIRECTED':
                     $request->markPending();
                     break;
                 case 'PENDING_CAPTURE':

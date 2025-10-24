@@ -7,6 +7,8 @@ waaz_sylius_cawl_plugin:
             api_secret: 'Clé secrète API'
             endpoint: 'URL du point de terminaison'
             sandbox: 'Mode bac à sable'
+            webhook_id: 'ID Webhook'
+            webhook_secret: 'Clé secrète Webhook'
             api_key.not_blank: 'Veuillez saisir la clé API.'
             api_secret.not_blank: 'Veuillez saisir la clé secrète API.'
             endpoint.not_blank: 'Veuillez saisir l''URL du point de terminaison.'

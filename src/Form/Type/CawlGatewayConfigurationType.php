@@ -42,6 +42,14 @@ final class CawlGatewayConfigurationType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('webhook_id', TextType::class, [
+                'label' => 'waaz_sylius_cawl_plugin.form.gateway_configuration.webhook_id',
+                'required' => false,
+            ])
+            ->add('webhook_secret', TextType::class, [
+                'label' => 'waaz_sylius_cawl_plugin.form.gateway_configuration.webhook_secret',
+                'required' => false,
+            ])
             ->add('sandbox', CheckboxType::class, [
                 'label' => 'waaz_sylius_cawl_plugin.form.gateway_configuration.sandbox',
                 'data' => true,

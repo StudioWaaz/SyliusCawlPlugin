@@ -15,16 +15,21 @@ use OnlinePayments\Sdk\Domain\PaymentResponse;
 use OnlinePayments\Sdk\Domain\RefundRequest;
 use OnlinePayments\Sdk\Domain\RefundResponse;
 use OnlinePayments\Sdk\Merchant\MerchantClient;
+use OnlinePayments\Sdk\Webhooks\InMemorySecretKeyStore;
+use OnlinePayments\Sdk\Webhooks\SignatureValidator;
 
 final class Api
 {
     private Client $client;
     private string $merchantId;
-
+    private string $webhookId;
+    private string $webhookSecret;
     public function __construct(
         string $apiKey,
         string $apiSecret,
         string $merchantId,
+        string $webhookId = '',
+        string $webhookSecret = '',
         bool $sandbox = true
     ) {
         $endpoint = $sandbox
@@ -43,6 +48,8 @@ final class Api
         $this->client = new Client($communicator);
 
         $this->merchantId = $merchantId;
+        $this->webhookId = $webhookId;
+        $this->webhookSecret = $webhookSecret;
     }
 
     public function createHostedPayment(CreateHostedCheckoutRequest $request): CreateHostedCheckoutResponse
@@ -68,5 +75,26 @@ final class Api
     private function getMerchantClient(): MerchantClient
     {
         return $this->client->merchant($this->merchantId);
+    }
+
+    public function verifySignature(string $payload, array $headers): void
+    {
+        $headers = array_map(function ($header) {
+            return $header[0];
+        }, $headers);
+        $keyStore = new InMemorySecretKeyStore();
+        $keyStore->storeSecretKey($this->getWebhookId(), $this->getWebhookSecret());
+        $validator = new SignatureValidator($keyStore);
+        $validator->validate($payload, $headers);
+    }
+
+    public function getWebhookId(): string
+    {
+        return $this->webhookId;
+    }
+
+    public function getWebhookSecret(): string
+    {
+        return $this->webhookSecret;
     }
 }

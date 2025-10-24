@@ -8,6 +8,7 @@ use OnlinePayments\Sdk\Domain\AmountOfMoney;
 use OnlinePayments\Sdk\Domain\CreateHostedCheckoutRequest;
 use OnlinePayments\Sdk\Domain\HostedCheckoutSpecificInput;
 use OnlinePayments\Sdk\Domain\Order;
+use OnlinePayments\Sdk\Domain\OrderReferences;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -16,13 +17,18 @@ use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Request\Capture;
+use Payum\Core\Security\GenericTokenFactoryAwareInterface;
+use Payum\Core\Security\GenericTokenFactoryAwareTrait;
+use Payum\Core\Security\TokenFactoryInterface;
+use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Api;
 
-final class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
+final class CaptureAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface, GenericTokenFactoryAwareInterface
 {
     use ApiAwareTrait;
     use GatewayAwareTrait;
+    use GenericTokenFactoryAwareTrait;
 
     public function __construct()
     {
@@ -36,6 +42,8 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         /** @var PaymentInterface $payment */
         $payment = $request->getModel();
         $details = $payment->getDetails();
+        $token = $request->getToken();
+        $notifyToken = $this->createNotifyToken($request);
 
         // If payment is already processed, skip
         if (isset($details['cawl_payment_id']) && isset($details['cawl_redirect_url'])) {
@@ -45,15 +53,19 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         $createHostedCheckoutRequest = new CreateHostedCheckoutRequest();
         $amountOfMoney = new AmountOfMoney();
         $amountOfMoney->setAmount($payment->getAmount());
-        //$amountOfMoney->setCurrencyCode($payment->getCurrencyCode());
         $amountOfMoney->setCurrencyCode('EUR');
 
         $order = new Order();
+        $reference = new OrderReferences();
+
+        $reference->setMerchantReference((string) $payment->getId());
+        $reference->setMerchantParameters($notifyToken->getHash());
+        $order->setReferences($reference);
         $order->setAmountOfMoney($amountOfMoney);
 
         $hostedCheckoutSpecificInput = new HostedCheckoutSpecificInput();
-        $targetUrl = $request->getToken()->getTargetUrl();
-        $hostedCheckoutSpecificInput->setReturnUrl($targetUrl);
+        $afterUrl = $request->getToken()->getAfterUrl();
+        $hostedCheckoutSpecificInput->setReturnUrl($afterUrl);
 
         $createHostedCheckoutRequest->setOrder($order);
         $createHostedCheckoutRequest->setHostedCheckoutSpecificInput($hostedCheckoutSpecificInput);
@@ -72,6 +84,16 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         if ($redirectUrl) {
             throw new HttpRedirect($redirectUrl);
         }
+    }
+
+    private function createNotifyToken($request): TokenInterface
+    {
+        $token = $request->getToken();
+
+        return $this->tokenFactory->createNotifyToken(
+            $token->getGatewayName(),
+            $token->getDetails()
+        );
     }
 
     public function supports($request): bool

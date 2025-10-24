@@ -8,77 +8,91 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
 use Payum\Core\Exception\RequestNotSupportedException;
+use Payum\Core\GatewayAwareInterface;
+use Payum\Core\GatewayAwareTrait;
+use Payum\Core\Request\GetHttpRequest;
+use Payum\Core\Request\GetToken;
 use Payum\Core\Request\Notify;
-use Sylius\Component\Core\Model\PaymentInterface;
+use Payum\Core\Security\TokenInterface;
 use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Api;
+use Waaz\SyliusCawlPlugin\Payum\CawlGateway\Request\WebhookProcessor;
 
-final class NotifyAction implements ActionInterface, ApiAwareInterface
+final class NotifyAction implements ActionInterface, ApiAwareInterface, GatewayAwareInterface
 {
     use ApiAwareTrait;
+    use GatewayAwareTrait;
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->apiClass = Api::class;
     }
 
+    /**
+     * @param Notify $request
+     */
     public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /** @var PaymentInterface $payment */
-        $payment = $request->getModel();
-        $details = $payment->getDetails();
-
-        // Parse URL parameters to get hostedCheckoutId
-        $hostedCheckoutId = $_GET['hostedCheckoutId'] ?? null;
-        $returnMac = $_GET['RETURNMAC'] ?? null;
-
-        // If we have a hosted checkout ID from the return URL, use it to get payment information
-        if ($hostedCheckoutId && !isset($details['cawl_payment_id'])) {
-            try {
-                $hostedCheckoutResponse = $this->api->getHostedCheckout($hostedCheckoutId);
-
-                // If we have a created payment output, extract the payment ID
-                if ($hostedCheckoutResponse->getCreatedPaymentOutput() &&
-                    $hostedCheckoutResponse->getCreatedPaymentOutput()->getPayment()) {
-
-                    $paymentResponse = $hostedCheckoutResponse->getCreatedPaymentOutput()->getPayment();
-                    $details['cawl_payment_id'] = $paymentResponse->getId();
-                    $details['cawl_status'] = $paymentResponse->getStatus();
-                    $details['cawl_return_mac'] = $returnMac;
-
-                    $payment->setDetails($details);
-                }
-            } catch (\Exception $e) {
-                $details['cawl_error'] = $e->getMessage();
-                $payment->setDetails($details);
-            }
-        }
-        // If we already have the hosted checkout ID stored but no payment ID, try to convert it
-        elseif (isset($details['cawl_hosted_checkout_id']) && !isset($details['cawl_payment_id'])) {
-            try {
-                $hostedCheckoutResponse = $this->api->getHostedCheckout($details['cawl_hosted_checkout_id']);
-
-                // If we have a created payment output, extract the payment ID
-                if ($hostedCheckoutResponse->getCreatedPaymentOutput() &&
-                    $hostedCheckoutResponse->getCreatedPaymentOutput()->getPayment()) {
-
-                    $paymentResponse = $hostedCheckoutResponse->getCreatedPaymentOutput()->getPayment();
-                    $details['cawl_payment_id'] = $paymentResponse->getId();
-                    $details['cawl_status'] = $paymentResponse->getStatus();
-
-                    $payment->setDetails($details);
-                }
-            } catch (\Exception $e) {
-                $details['cawl_error'] = $e->getMessage();
-                $payment->setDetails($details);
-            }
+        if (null === $request->getModel()) {
+            $webhookProcessor = $this->processUnsafe($request);
+            $this->gateway->execute($webhookProcessor);
         }
     }
 
+    private function processUnsafe(Notify $request): WebhookProcessor
+    {
+        $httpRequest = new GetHttpRequest();
+        $this->gateway->execute($httpRequest);
+
+        // Not a Symfony app then
+        if (!property_exists($httpRequest, 'headers')) {
+            throw RequestNotSupportedException::create($request);
+        }
+
+        $headers = $httpRequest->headers;
+        if (!$this->isWebhookNotification($headers)) {
+            throw RequestNotSupportedException::create($request);
+        }
+
+        $content = $httpRequest->content;
+
+        $this->api->verifySignature($content, $headers);
+
+        try {
+            $payload = json_decode($content, true, 512, JSON_THROW_ON_ERROR);
+        } catch (\JsonException) {
+            throw RequestNotSupportedException::create($request);
+        }
+
+        $hash = $this->retrieveTokenHash($payload);
+
+        $token = $this->findTokenByHash($hash);
+
+        return new WebhookProcessor(
+            $token,
+            $payload
+        );
+    }
+
+
+    private function findTokenByHash(string $tokenHash): TokenInterface
+    {
+        $getTokenRequest = new GetToken($tokenHash);
+        $this->gateway->execute($getTokenRequest);
+        return $getTokenRequest->getToken();
+    }
+
+    private function retrieveTokenHash(array $payload): string
+    {
+        return $payload['payment']['paymentOutput']['merchantParameters'];
+    }
+
+    private function isWebhookNotification(array $headers): bool
+    {
+        return isset($headers['x-gcs-signature'][0]);
+    }
     public function supports($request): bool
     {
-        return $request instanceof Notify &&
-            $request->getModel() instanceof PaymentInterface;
+        return $request instanceof Notify;
     }
 }

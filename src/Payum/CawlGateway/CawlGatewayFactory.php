@@ -18,10 +18,6 @@ final class CawlGatewayFactory extends GatewayFactory
         $config->defaults([
             'payum.factory_name' => 'cawl',
             'payum.factory_title' => 'CAWL (Crédit Agricole)',
-            'payum.action.capture' => new CaptureAction(),
-            'payum.action.notify' => new NotifyAction(),
-            'payum.action.status' => new StatusAction(),
-            'payum.action.refund' => new RefundAction(),
             'payum.template.gateway_config' => '@WaazSyliusCawlPlugin/Admin/GatewayConfig/cawl.html.twig',
         ]);
 
@@ -30,6 +26,8 @@ final class CawlGatewayFactory extends GatewayFactory
                 'api_key' => '',
                 'api_secret' => '',
                 'merchant_id' => '',
+                'webhook_id' => '',
+                'webhook_secret' => '',
                 'sandbox' => true,
             ];
 
@@ -44,6 +42,8 @@ final class CawlGatewayFactory extends GatewayFactory
                     $config['api_key'],
                     $config['api_secret'],
                     $config['merchant_id'],
+                        $config['webhook_id'] ?? '',
+                    $config['webhook_secret'] ?? '',
                     $config['sandbox']
                 );
             };
