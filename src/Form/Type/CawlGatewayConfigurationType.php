@@ -52,7 +52,6 @@ final class CawlGatewayConfigurationType extends AbstractType
             ])
             ->add('sandbox', CheckboxType::class, [
                 'label' => 'waaz_sylius_cawl_plugin.form.gateway_configuration.sandbox',
-                'data' => true,
                 'required' => false,
             ])
         ;

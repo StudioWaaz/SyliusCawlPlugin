@@ -5,10 +5,13 @@ declare(strict_types=1);
 namespace Waaz\SyliusCawlPlugin\Payum\CawlGateway\Action;
 
 use OnlinePayments\Sdk\Domain\AmountOfMoney;
+use OnlinePayments\Sdk\Domain\CardPaymentMethodSpecificInputBase;
 use OnlinePayments\Sdk\Domain\CreateHostedCheckoutRequest;
 use OnlinePayments\Sdk\Domain\HostedCheckoutSpecificInput;
+use OnlinePayments\Sdk\Domain\MobilePaymentMethodHostedCheckoutSpecificInput;
 use OnlinePayments\Sdk\Domain\Order;
 use OnlinePayments\Sdk\Domain\OrderReferences;
+use OnlinePayments\Sdk\Domain\RedirectPaymentMethodSpecificInput;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\ApiAwareTrait;
@@ -68,6 +71,18 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
 
         $createHostedCheckoutRequest->setOrder($order);
         $createHostedCheckoutRequest->setHostedCheckoutSpecificInput($hostedCheckoutSpecificInput);
+
+        $cardPaymentMethodSpecificInput = new CardPaymentMethodSpecificInputBase();
+        $cardPaymentMethodSpecificInput->setAuthorizationMode('SALE');
+        $createHostedCheckoutRequest->setCardPaymentMethodSpecificInput($cardPaymentMethodSpecificInput);
+
+        $mobilePaymentMethodSpecificInput = new MobilePaymentMethodHostedCheckoutSpecificInput();
+        $mobilePaymentMethodSpecificInput->setAuthorizationMode('SALE');
+        $createHostedCheckoutRequest->setMobilePaymentMethodSpecificInput($mobilePaymentMethodSpecificInput);
+
+        $redirectPaymentMethodSpecificInput = new RedirectPaymentMethodSpecificInput();
+        $redirectPaymentMethodSpecificInput->setRequiresApproval(false);
+        $createHostedCheckoutRequest->setRedirectPaymentMethodSpecificInput($redirectPaymentMethodSpecificInput);
 
         $response = $this->api->createHostedPayment($createHostedCheckoutRequest);
 
