@@ -38,7 +38,7 @@ final class Api
     ) {
         $endpoint = $sandbox
             ? 'https://payment.preprod.cawl-solutions.fr'
-            : 'https://payment.cawl.fr';
+            : 'https://payment.cawl-solutions.fr/';
 
         $communicatorConfiguration = new CommunicatorConfiguration(
             $apiKey,
