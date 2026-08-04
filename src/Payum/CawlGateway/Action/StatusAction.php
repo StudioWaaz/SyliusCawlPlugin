@@ -63,11 +63,6 @@ final class StatusAction implements ActionInterface, ApiAwareInterface
                     $request->markCanceled();
 
                     break;
-                case 'REJECTED':
-                case 'REJECTED_CAPTURE':
-                    $request->markFailed();
-
-                    break;
                 case 'REFUNDED':
                     $request->markRefunded();
 
