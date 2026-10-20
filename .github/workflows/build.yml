@@ -22,9 +22,17 @@ jobs:
             fail-fast: false
             matrix:
                 php: ["8.1", "8.2", "8.3"]
-                symfony: ["^5.4", "^6.4"]
+                sylius: ["~1.11.0", "~1.12.0", "~1.13.0", "~1.14.0"]
+                symfony: ["^5.4", "^6.0", "^6.4"]
                 node: ["20.x"]
                 mysql: ["8.4"]
+                exclude:
+                    - sylius: "~1.11.0"
+                      symfony: "^6.0"
+                    - sylius: "~1.11.0"
+                      symfony: "^6.4"
+                    - sylius: "~1.14.0"
+                      symfony: "^5.4"
 
         env:
             APP_ENV: test
@@ -109,7 +117,7 @@ jobs:
 
             -
                 name: Install PHP dependencies
-                run: composer install --no-interaction
+                run: composer update --with-all-dependencies --no-interaction
                 env:
                     SYMFONY_REQUIRE: ${{ matrix.symfony }}
 
