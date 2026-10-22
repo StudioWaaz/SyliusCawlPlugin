@@ -68,6 +68,7 @@ final class CaptureAction implements ActionInterface, ApiAwareInterface, Gateway
         $hostedCheckoutSpecificInput = new HostedCheckoutSpecificInput();
         $afterUrl = $request->getToken()->getAfterUrl();
         $hostedCheckoutSpecificInput->setReturnUrl($afterUrl);
+        $hostedCheckoutSpecificInput->setLocale('fr-FR');
 
         $createHostedCheckoutRequest->setOrder($order);
         $createHostedCheckoutRequest->setHostedCheckoutSpecificInput($hostedCheckoutSpecificInput);
