@@ -5,6 +5,7 @@ waaz_sylius_cawl_plugin:
         gateway_configuration:
             api_key: 'API Key'
             api_secret: 'API Secret'
+            variant: 'Hosted Checkout Design Variant'
             endpoint: 'Endpoint URL'
             sandbox: 'Sandbox Mode'
             api_key.not_blank: 'Please enter the API key.'

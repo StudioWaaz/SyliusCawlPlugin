@@ -24,6 +24,7 @@ final class CawlGatewayFactory extends GatewayFactory
                 'merchant_id' => '',
                 'webhook_id' => '',
                 'webhook_secret' => '',
+                'variant' => '',
                 'sandbox' => true,
             ];
 
@@ -41,6 +42,7 @@ final class CawlGatewayFactory extends GatewayFactory
                     $config['webhook_id'] ?? '',
                     $config['webhook_secret'] ?? '',
                     $config['sandbox'],
+                    $config['variant'] ?? '',
                 );
             };
         }

@@ -28,6 +28,8 @@ final class Api
 
     private string $webhookSecret;
 
+    private string $variant;
+
     public function __construct(
         string $apiKey,
         string $apiSecret,
@@ -35,6 +37,7 @@ final class Api
         string $webhookId = '',
         string $webhookSecret = '',
         bool $sandbox = true,
+        string $variant = '',
     ) {
         $endpoint = $sandbox
             ? 'https://payment.preprod.cawl-solutions.fr'
@@ -54,6 +57,7 @@ final class Api
         $this->merchantId = $merchantId;
         $this->webhookId = $webhookId;
         $this->webhookSecret = $webhookSecret;
+        $this->variant = $variant;
     }
 
     public function createHostedPayment(CreateHostedCheckoutRequest $request): CreateHostedCheckoutResponse
@@ -100,5 +104,10 @@ final class Api
     public function getWebhookSecret(): string
     {
         return $this->webhookSecret;
+    }
+
+    public function getVariant(): string
+    {
+        return $this->variant;
     }
 }

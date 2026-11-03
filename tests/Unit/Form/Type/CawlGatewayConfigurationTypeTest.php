@@ -24,7 +24,7 @@ final class CawlGatewayConfigurationTypeTest extends TestCase
         $builder = $this->createMock(FormBuilderInterface::class);
 
         $builder
-            ->expects($this->exactly(6))
+            ->expects($this->exactly(7))
             ->method('add')
             ->willReturnSelf();
 
