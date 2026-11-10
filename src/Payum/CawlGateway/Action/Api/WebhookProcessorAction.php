@@ -55,6 +55,22 @@ class WebhookProcessorAction implements ActionInterface, GatewayAwareInterface
                 $details['cawl_webhook_received'] = true;
                 $details['cawl_webhook_timestamp'] = time();
 
+                if (isset($paymentData['paymentOutput'])) {
+                    $paymentOutput = $paymentData['paymentOutput'];
+                    $details['cawl_payment_method'] = $paymentOutput['paymentMethod'] ?? null;
+
+                    $paymentMethodSpecificOutput = match ($details['cawl_payment_method']) {
+                        'card' => $paymentOutput['cardPaymentMethodSpecificOutput'] ?? [],
+                        'mobile' => $paymentOutput['mobilePaymentMethodSpecificOutput'] ?? [],
+                        'redirect' => $paymentOutput['redirectPaymentMethodSpecificOutput'] ?? [],
+                        'bankTransfer' => $paymentOutput['bankTransferPaymentMethodSpecificOutput'] ?? [],
+                        default => [],
+                    };
+
+                    $details['cawl_payment_product_id'] =
+                        $paymentMethodSpecificOutput['paymentProductId'] ?? null;
+                }
+
                 // Ajouter d'autres champs selon la structure des données Cawl
                 if (isset($paymentData['statusOutput'])) {
                     $details['cawl_status_code'] = $paymentData['statusOutput']['statusCode'] ?? null;
